@@ -36,13 +36,6 @@ class WCPS_Variables {
 
 		$date = $order->get_date_created();
 
-		// استان در ووکامرس به‌صورت کد ذخیره می‌شود (مثلاً THR)؛ نام آن را نمایش می‌دهیم.
-		$state  = $order->get_billing_state();
-		$states = WC()->countries->get_states( $order->get_billing_country() );
-		if ( is_array( $states ) && isset( $states[ $state ] ) ) {
-			$state = html_entity_decode( $states[ $state ], ENT_QUOTES );
-		}
-
 		$vars = array(
 			'order_id'           => (string) $order->get_id(),
 			'order_number'       => $order->get_order_number(),
@@ -61,12 +54,29 @@ class WCPS_Variables {
 			'billing_full_name'  => trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() ),
 			'billing_phone'      => $order->get_billing_phone(),
 			'billing_email'      => $order->get_billing_email(),
-			'billing_state'      => $state,
+			'billing_state'      => self::state_name( $order->get_billing_country(), $order->get_billing_state() ),
+			'shipping_state'     => self::state_name( $order->get_shipping_country(), $order->get_shipping_state() ),
 			'billing_city'       => $order->get_billing_city(),
 			'billing_address'    => trim( $order->get_billing_address_1() . ' ' . $order->get_billing_address_2() ),
 		);
 
 		return array_merge( self::site_vars(), $vars, $extra );
+	}
+
+	/**
+	 * نام استان از روی کد آن (ووکامرس استان را به‌صورت کد ذخیره می‌کند، مثلاً THR).
+	 * اگر نامی پیدا نشود، همان مقدار خام برگردانده می‌شود.
+	 *
+	 * @param string $country کد کشور.
+	 * @param string $state   کد یا نام استان.
+	 * @return string
+	 */
+	private static function state_name( $country, $state ) {
+		$states = WC()->countries->get_states( $country );
+		if ( is_array( $states ) && isset( $states[ $state ] ) ) {
+			return html_entity_decode( $states[ $state ], ENT_QUOTES );
+		}
+		return (string) $state;
 	}
 
 	/**
@@ -171,7 +181,7 @@ class WCPS_Variables {
 				'order_id', 'order_number', 'order_status', 'order_status_prev', 'order_total', 'order_total_plain',
 				'order_date', 'order_items', 'order_items_count', 'payment_method', 'shipping_method',
 				'transaction_id', 'customer_note', 'billing_first_name', 'billing_last_name', 'billing_full_name',
-				'billing_phone', 'billing_email', 'billing_state', 'billing_city', 'billing_address',
+				'billing_phone', 'billing_email', 'billing_state', 'billing_city', 'billing_address', 'shipping_state',
 			),
 			'product' => array( 'product_id', 'product_name', 'product_sku', 'product_price', 'stock_quantity' ),
 			'user'    => array( 'user_id', 'user_login', 'user_email', 'user_first_name', 'user_last_name', 'user_full_name', 'user_mobile', 'register_date' ),
