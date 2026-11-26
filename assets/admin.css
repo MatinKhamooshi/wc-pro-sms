@@ -1,0 +1,99 @@
+.wcps-wrap {
+	max-width: 960px;
+}
+
+.wcps-tab-content {
+	margin-top: 16px;
+}
+
+.wcps-card {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	padding: 16px 20px;
+	margin-bottom: 16px;
+}
+
+.wcps-card h2 {
+	margin-top: 0;
+}
+
+.wcps-card-info {
+	border-right: 4px solid #2271b1;
+}
+
+/* کارت رویداد */
+.wcps-event {
+	transition: border-color 0.15s;
+}
+
+.wcps-event.is-enabled {
+	border-right: 4px solid #00a32a;
+}
+
+.wcps-event-head {
+	display: flex;
+	align-items: baseline;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.wcps-event-toggle {
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.wcps-event-body {
+	margin-top: 12px;
+}
+
+/* چیپ متغیرها */
+.wcps-hints {
+	margin-top: 10px;
+}
+
+.wcps-hints summary {
+	cursor: pointer;
+	color: #2271b1;
+}
+
+.wcps-hint-chips {
+	margin-top: 8px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.wcps-chip {
+	cursor: pointer;
+	direction: ltr;
+	padding: 2px 8px;
+	border-radius: 4px;
+	background: #f0f0f1;
+	border: 1px solid #dcdcde;
+}
+
+.wcps-chip:hover {
+	background: #2271b1;
+	color: #fff;
+}
+
+/* وضعیت‌ها */
+.wcps-status {
+	margin-right: 10px;
+	font-weight: 600;
+}
+
+.wcps-status-ok,
+.wcps-ok {
+	color: #00a32a;
+}
+
+.wcps-status-fail,
+.wcps-fail {
+	color: #d63638;
+}
+
+.wcps-status-loading {
+	color: #996800;
+}
