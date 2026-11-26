@@ -34,33 +34,76 @@ class WCPS_Variables {
 			$items[] = $item->get_name() . ' × ' . $item->get_quantity();
 		}
 
-		$date = $order->get_date_created();
+		$date  = $order->get_date_created();
+		$price = function ( $amount ) use ( $order ) {
+			return html_entity_decode( wp_strip_all_tags( wc_price( $amount, array( 'currency' => $order->get_currency() ) ) ), ENT_QUOTES );
+		};
 
 		$vars = array(
-			'order_id'           => (string) $order->get_id(),
-			'order_number'       => $order->get_order_number(),
-			'order_status'       => wc_get_order_status_name( $order->get_status() ),
-			'order_total'        => html_entity_decode( wp_strip_all_tags( wc_price( $order->get_total(), array( 'currency' => $order->get_currency() ) ) ), ENT_QUOTES ),
-			'order_total_plain'  => (string) $order->get_total(),
-			'order_date'         => $date ? wp_date( 'Y/m/d H:i', $date->getTimestamp() ) : '',
-			'order_items'        => implode( '، ', $items ),
-			'order_items_count'  => (string) $order->get_item_count(),
-			'payment_method'     => $order->get_payment_method_title(),
-			'shipping_method'    => $order->get_shipping_method(),
-			'transaction_id'     => $order->get_transaction_id(),
-			'customer_note'      => $order->get_customer_note(),
-			'billing_first_name' => $order->get_billing_first_name(),
-			'billing_last_name'  => $order->get_billing_last_name(),
-			'billing_full_name'  => trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() ),
-			'billing_phone'      => $order->get_billing_phone(),
-			'billing_email'      => $order->get_billing_email(),
-			'billing_state'      => self::state_name( $order->get_billing_country(), $order->get_billing_state() ),
-			'shipping_state'     => self::state_name( $order->get_shipping_country(), $order->get_shipping_state() ),
-			'billing_city'       => $order->get_billing_city(),
-			'billing_address'    => trim( $order->get_billing_address_1() . ' ' . $order->get_billing_address_2() ),
+			'order_id'              => (string) $order->get_id(),
+			'order_number'          => $order->get_order_number(),
+			'order_status'          => wc_get_order_status_name( $order->get_status() ),
+			'order_total'           => $price( $order->get_total() ),
+			'order_total_plain'     => (string) $order->get_total(),
+			'order_subtotal'        => $price( $order->get_subtotal() ),
+			'order_shipping_total'  => $price( $order->get_shipping_total() ),
+			'order_discount_total'  => $price( $order->get_discount_total() ),
+			'coupon_codes'          => implode( '، ', $order->get_coupon_codes() ),
+			'order_date'            => $date ? wp_date( 'Y/m/d H:i', $date->getTimestamp() ) : '',
+			'order_items'           => implode( '، ', $items ),
+			'order_items_count'     => (string) $order->get_item_count(),
+			'order_url'             => $order->get_view_order_url(),
+			'order_pay_url'         => $order->get_checkout_payment_url(),
+			'order_admin_url'       => $order->get_edit_order_url(),
+			'payment_method'        => $order->get_payment_method_title(),
+			'shipping_method'       => $order->get_shipping_method(),
+			'transaction_id'        => $order->get_transaction_id(),
+			'customer_note'         => $order->get_customer_note(),
+			'billing_email'         => $order->get_billing_email(),
 		);
 
-		return array_merge( self::site_vars(), $vars, $extra );
+		return array_merge(
+			self::site_vars(),
+			$vars,
+			self::address_vars( $order, 'billing' ),
+			self::address_vars( $order, 'shipping' ),
+			$extra
+		);
+	}
+
+	/**
+	 * متغیرهای آدرس صورتحساب یا ارسال: billing_* یا shipping_*.
+	 *
+	 * {prefix}_full_address = «استان، شهر، آدرس» (بخش‌های خالی حذف می‌شوند).
+	 *
+	 * @param WC_Order $order  سفارش.
+	 * @param string   $prefix billing|shipping.
+	 * @return array<string, string>
+	 */
+	private static function address_vars( WC_Order $order, $prefix ) {
+		$get = function ( $field ) use ( $order, $prefix ) {
+			return (string) $order->{"get_{$prefix}_{$field}"}();
+		};
+
+		$country   = $get( 'country' );
+		$countries = WC()->countries->get_countries();
+		$state     = self::state_name( $country, $get( 'state' ) );
+		$city      = $get( 'city' );
+		$address   = trim( $get( 'address_1' ) . ' ' . $get( 'address_2' ) );
+
+		return array(
+			"{$prefix}_first_name"   => $get( 'first_name' ),
+			"{$prefix}_last_name"    => $get( 'last_name' ),
+			"{$prefix}_full_name"    => trim( $get( 'first_name' ) . ' ' . $get( 'last_name' ) ),
+			"{$prefix}_company"      => $get( 'company' ),
+			"{$prefix}_phone"        => $get( 'phone' ),
+			"{$prefix}_country"      => isset( $countries[ $country ] ) ? html_entity_decode( $countries[ $country ], ENT_QUOTES ) : $country,
+			"{$prefix}_state"        => $state,
+			"{$prefix}_city"         => $city,
+			"{$prefix}_address"      => $address,
+			"{$prefix}_postcode"     => $get( 'postcode' ),
+			"{$prefix}_full_address" => implode( '، ', array_filter( array( $state, $city, $address ), 'strlen' ) ),
+		);
 	}
 
 	/**
@@ -179,13 +222,22 @@ class WCPS_Variables {
 		$map = array(
 			'order'   => array(
 				'order_id', 'order_number', 'order_status', 'order_status_prev', 'order_total', 'order_total_plain',
-				'order_date', 'order_items', 'order_items_count', 'payment_method', 'shipping_method',
-				'transaction_id', 'customer_note', 'billing_first_name', 'billing_last_name', 'billing_full_name',
-				'billing_phone', 'billing_email', 'billing_state', 'billing_city', 'billing_address', 'shipping_state',
+				'order_subtotal', 'order_shipping_total', 'order_discount_total', 'coupon_codes',
+				'order_date', 'order_items', 'order_items_count', 'order_url', 'order_pay_url', 'order_admin_url',
+				'payment_method', 'shipping_method', 'transaction_id', 'customer_note', 'billing_email',
 			),
 			'product' => array( 'product_id', 'product_name', 'product_sku', 'product_price', 'stock_quantity' ),
 			'user'    => array( 'user_id', 'user_login', 'user_email', 'user_first_name', 'user_last_name', 'user_full_name', 'user_mobile', 'register_date' ),
 		);
+
+		if ( 'order' === $context ) {
+			$fields = array( 'full_address', 'first_name', 'last_name', 'full_name', 'company', 'phone', 'country', 'state', 'city', 'address', 'postcode' );
+			foreach ( array( 'billing', 'shipping' ) as $prefix ) {
+				foreach ( $fields as $field ) {
+					$map['order'][] = $prefix . '_' . $field;
+				}
+			}
+		}
 
 		return array_merge( isset( $map[ $context ] ) ? $map[ $context ] : array(), $common );
 	}
