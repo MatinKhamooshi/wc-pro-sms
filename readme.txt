@@ -4,7 +4,7 @@ Tags: woocommerce, sms, iranpayamak, پیامک, ووکامرس
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 
 ارسال پیامک اطلاع‌رسانی به مدیر و مشتری در رویدادهای ووکامرس با پشتیبانی از ارسال پترن — درگاه ایران‌پیامک.
@@ -18,7 +18,7 @@ License: GPLv2 or later
 * پیامک به مدیر: سفارش جدید، تغییر هر وضعیت سفارش، کاهش/اتمام موجودی محصول، ثبت‌نام کاربر جدید
 * پیامک به مشتری: ثبت سفارش، تغییر هر وضعیت سفارش، خوش‌آمدگویی ثبت‌نام
 * در همه رویدادها: انتخاب بین پیامک ساده (متن دلخواه با متغیر) یا پیامک با پترن (کد پترن + نگاشت متغیرها)
-* متغیرهای پویا: {order_number}، {order_total}، {billing_full_name}، {billing_state}، {shipping_state}، {product_name}، {stock_quantity} و…
+* متغیرهای پویا: {order_number}، {order_total}، {billing_full_name}، {billing_full_address}، {shipping_full_address}، {shipping_full_name}، {order_url}، {product_name}، {stock_quantity} و…
 * ارسال پیامک تست (ساده یا پترن)
 * گزارش ۵۰ ارسال آخر
 * سازگار با HPOS
@@ -32,6 +32,12 @@ License: GPLv2 or later
 5. از تب «ارسال تست» یک پیامک آزمایشی بفرستید.
 
 == Changelog ==
+
+= 1.3.0 =
+* متغیر آدرس کامل {billing_full_address} و {shipping_full_address} به شکل «استان، شهر، آدرس».
+* همه متغیرهای ارسال (shipping_*): نام، شرکت، تلفن، کشور، استان، شهر، آدرس، کدپستی.
+* متغیرهای جدید: کشور، کدپستی و شرکت صورتحساب، جمع جزء، هزینه ارسال، تخفیف، کدهای تخفیف، لینک مشاهده سفارش، لینک پرداخت، لینک سفارش در پیشخوان.
+
 
 = 1.2.0 =
 * متغیر جدید {shipping_state} (نام استان / ایالت ارسال).

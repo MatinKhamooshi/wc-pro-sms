@@ -2,7 +2,7 @@
 /**
  * Plugin Name: پیامک پرو ووکامرس
  * Description: ارسال پیامک اطلاع‌رسانی به مدیر و مشتری در رویدادهای ووکامرس (سفارش، موجودی، کاربر و...) با پشتیبانی کامل از ارسال با پترن — درگاه ایران‌پیامک.
- * Version:     1.2.0
+ * Version:     1.3.0
  * Author:      Matin Khamooshi
  * Author URI:  https://matinkhamooshi.ir/
  * Text Domain: wc-pro-sms
@@ -15,7 +15,7 @@
 
 defined('ABSPATH') || exit;
 
-define('WCPS_VERSION', '1.2.0');
+define('WCPS_VERSION', '1.3.0');
 define('WCPS_FILE', __FILE__);
 define('WCPS_DIR', plugin_dir_path(__FILE__));
 define('WCPS_URL', plugin_dir_url(__FILE__));
